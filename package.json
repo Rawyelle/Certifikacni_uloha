@@ -1,0 +1,29 @@
+{
+  "name": "certifikacni_uloha",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rawyelle/Certifikacni_uloha.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Rawyelle/Certifikacni_uloha/issues"
+  },
+  "homepage": "https://github.com/Rawyelle/Certifikacni_uloha#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "@faker-js/faker": "^9.8.0",
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.15.29",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.0"
+  }
+}
