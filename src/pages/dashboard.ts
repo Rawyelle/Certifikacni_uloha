@@ -146,4 +146,9 @@ export class DashboardPage {
     await this.addAccountButton.click();
     return this;
   }
+
+  async waitForProfileFormReady(): Promise<this> {
+    await expect(this.saveButton).toBeVisible();
+    return this;
+  }
 }

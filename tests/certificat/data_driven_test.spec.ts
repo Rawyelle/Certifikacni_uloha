@@ -21,6 +21,10 @@ test.describe("DDT: overeni zobrazeni zustatku", () => {
     test(`${index + 1}. ucet se zustatkem ${entry.amount}`, async ({
       page,
     }) => {
+      test.skip(
+        entry.disabled === true,
+        "Tato kombinace je označena jako disabled."
+      );
       const apiContext = await request.newContext();
       const userApi = new UserApi(apiContext);
 
@@ -41,10 +45,6 @@ test.describe("DDT: overeni zobrazeni zustatku", () => {
       const numericAmount = parseAmount(entry.amount);
 
       // skip pro posledni dve castky, lze skipnout i bez konkretni podminky (po radku s accoutData dopsat if (index >= accountData.length - 2) return;, ale predpokladam, ze testy padaji kvuli vysokym cislum)
-      test.skip(
-        numericAmount > 100_000_000 || numericAmount < -100_000_000,
-        "prilis velke castky, skipujeme zatim testy"
-      );
 
       const response = await userApi.createAccount(token, numericAmount);
       expect(response.status()).toBe(201);

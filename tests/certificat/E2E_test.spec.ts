@@ -56,6 +56,7 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
   await test.step("Vyplnit uzivateli profil", async () => {
     const dashboard = new DashboardPage(page);
     await dashboard.openEditForm();
+    await dashboard.waitForProfileFormReady();
     await dashboard.fillProfile(username, surname, email, phone, age);
 
     // Overujeme, ze profil je vyplnen uspesne pokud je videt zprava
