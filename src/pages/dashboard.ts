@@ -95,27 +95,11 @@ export class DashboardPage {
     phone: string,
     age: string
   ): Promise<this> {
-    const delay = 100;
-
-    await this.usernameInput.focus();
-    await this.page.waitForTimeout(100);
-    await this.usernameInput.type(username, { delay });
-
-    await this.surnameInput.focus();
-    await this.page.waitForTimeout(100);
-    await this.surnameInput.type(surname, { delay });
-
-    await this.emailInput.focus();
-    await this.page.waitForTimeout(100);
-    await this.emailInput.type(email, { delay });
-
-    await this.phoneInput.focus();
-    await this.page.waitForTimeout(100);
-    await this.phoneInput.type(phone, { delay });
-
-    await this.ageInput.focus();
-    await this.page.waitForTimeout(100);
-    await this.ageInput.type(age, { delay });
+    await this.usernameInput.fill(username);
+    await this.surnameInput.fill(surname);
+    await this.emailInput.fill(email);
+    await this.phoneInput.fill(phone);
+    await this.ageInput.fill(age);
 
     await this.saveButton.click();
     return this;
