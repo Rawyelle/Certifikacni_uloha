@@ -149,6 +149,9 @@ export class DashboardPage {
 
   async waitForProfileFormReady(): Promise<this> {
     await expect(this.saveButton).toBeVisible();
+    await expect(this.usernameInput).toBeVisible();
+    await expect(this.usernameInput).toBeEnabled();
+    await this.page.waitForTimeout(200);
     return this;
   }
 }
