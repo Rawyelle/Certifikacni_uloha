@@ -151,7 +151,7 @@ export class DashboardPage {
     await expect(this.saveButton).toBeVisible();
     await expect(this.usernameInput).toBeVisible();
     await expect(this.usernameInput).toBeEnabled();
-    await this.page.waitForTimeout(200);
+    await this.page.waitForTimeout(2000);
     return this;
   }
 }
