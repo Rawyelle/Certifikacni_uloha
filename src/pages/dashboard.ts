@@ -112,7 +112,6 @@ export class DashboardPage {
     await this.emailInput.fill(email);
     await this.phoneInput.fill(phone);
     await this.ageInput.fill(age);
-    await this.saveButton.click();
     return this;
   }
 
@@ -171,5 +170,25 @@ export class DashboardPage {
 
   async logout(): Promise<void> {
     await this.page.locator('//button[@class="logout-link"]').click();
+  }
+
+  async waitForFormFilled(
+    username: string,
+    surname: string,
+    email: string,
+    phone: string,
+    age: string
+  ): Promise<this> {
+    await expect(this.usernameInput).toHaveValue(username);
+    await expect(this.surnameInput).toHaveValue(surname);
+    await expect(this.emailInput).toHaveValue(email);
+    await expect(this.phoneInput).toHaveValue(phone);
+    await expect(this.ageInput).toHaveValue(age);
+    return this;
+  }
+
+  async clickSave(): Promise<this> {
+    await this.saveButton.click();
+    return this;
   }
 }
