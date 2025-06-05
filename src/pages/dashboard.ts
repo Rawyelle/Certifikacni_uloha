@@ -191,4 +191,11 @@ export class DashboardPage {
     await this.saveButton.click();
     return this;
   }
+  async expectProfileFieldsEnabled() {
+    await expect(this.usernameInput).toBeEnabled();
+    await expect(this.surnameInput).toBeEnabled();
+    await expect(this.emailInput).toBeEnabled();
+    await expect(this.phoneInput).toBeEnabled();
+    await expect(this.ageInput).toBeEnabled();
+  }
 }

@@ -122,26 +122,29 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
     await dashboard.openEditForm();
     await dashboard.waitForProfileFormReady();
 
-    // Заполняем профиль
+    // Ждем, что поля ввода активны
+    await dashboard.expectProfileFieldsEnabled();
+    // Заполняем форму
     await dashboard.fillProfile({ username, surname, email, phone, age });
+
     await dashboard.waitForFormFilled(username, surname, email, phone, age);
 
-    // Ждем, что кнопка Save станет активной (или другую проверку, если кнопка неактивна)
+    // Убедимся, что кнопка Save активна
     await expect(dashboard.saveButton).toBeEnabled();
 
-    // Подписываемся на ответ PATCH и нажимаем Save одновременно
-    const responsePromise = page.waitForResponse(
-      (response) =>
-        response.url().includes("/tegb/profile") &&
-        response.request().method() === "PATCH" &&
-        response.status() === 200
+    // Параллельно ждем успешный PATCH и нажимаем Save
+    const patchResponse = page.waitForResponse(
+      (res) =>
+        res.url().includes("/tegb/profile") &&
+        res.request().method() === "PATCH" &&
+        res.status() === 200
     );
     await dashboard.clickSave();
-    await responsePromise;
+    await patchResponse;
 
     await dashboard.expectSuccessMessage();
 
-    await expect(dashboard.usernameInput).toBeHidden(); // или другой надежный способ
+    await expect(dashboard.usernameInput).toBeHidden(); // или другой надёжный способ
 
     await dashboard.expectUsername(username);
     await dashboard.expectSurname(surname);
