@@ -1,13 +1,30 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, request } from "@playwright/test";
 import { LoginPage } from "../../src/pages/login-page.ts";
 import { DashboardPage } from "../../src/pages/dashboard.ts";
+import { ApiHelper } from "../../src/api/apiHelper.ts";
+import { faker } from "@faker-js/faker";
 
-// Используем нового пользователя test03
-const username = "test03";
-const password = "test3";
+let username: string;
+let password: string;
+let email: string;
 
 test.describe("Dashboard atomicke testy", () => {
   test.beforeEach(async ({ page }) => {
+    // Registrujeme noveho uzivatele
+    const apiContext = await request.newContext();
+    const helper = new ApiHelper(apiContext);
+
+    username = faker.internet.username();
+    password = faker.internet.password();
+    email = faker.internet.email();
+
+    const registerResponse = await helper.registerUser(
+      username,
+      password,
+      email
+    );
+    expect(registerResponse.status()).toBe(201);
+
     const loginPage = new LoginPage(page);
     await loginPage.open();
     await loginPage.login(username, password);

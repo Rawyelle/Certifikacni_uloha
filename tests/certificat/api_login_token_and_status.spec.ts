@@ -1,10 +1,10 @@
 import { test, expect, request } from "@playwright/test";
 import { faker } from "@faker-js/faker";
-import { UserApi } from "../../src/api/userApi.ts";
+import { ApiHelper } from "../../src/api/apiHelper.ts";
 
 test("Login a status 201", async () => {
   const apiContext = await request.newContext();
-  const userApi = new UserApi(apiContext);
+  const userApi = new ApiHelper(apiContext);
 
   //registrace, abychom meli koho se prihlasit
   const username = faker.internet.username();

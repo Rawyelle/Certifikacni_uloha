@@ -39,10 +39,12 @@ export class RegistrationPage {
 
   async submit(): Promise<LoginPage> {
     await this.submitButton.click();
-    return new LoginPage(this.page);
-  }
-  async expectSuccess(): Promise<LoginPage> {
     await expect(this.successMessage).toBeVisible();
     return new LoginPage(this.page);
+  }
+
+  async expectSuccessMessage(): Promise<this> {
+    await expect(this.successMessage).toContainText("Registrace úspěšná");
+    return this;
   }
 }

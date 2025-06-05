@@ -1,9 +1,9 @@
 import { test, expect, request } from "@playwright/test";
 import { faker } from "@faker-js/faker";
-import { RegistrationPage } from "../../src/pages/registration-page.ts";
-import { UserApi } from "../../src/api/userApi.ts";
+
 import { LoginPage } from "../../src/pages/login-page.ts";
 import { DashboardPage } from "../../src/pages/dashboard.ts";
+import { ApiHelper } from "../../src/api/apiHelper.ts";
 
 test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlasit se", async ({
   page,
@@ -15,26 +15,23 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
   const phone = faker.phone.number();
   const age = faker.number.hex({ min: 12, max: 99 });
 
-  // Registrace na FE
-  const registration = new RegistrationPage(page);
+  // 1. Login page otevřít a kliknout na "Registruj se"
+  const loginPage = new LoginPage(page);
+  const registration = await loginPage
+    .open()
+    .then((page) => page.goToRegistration());
+
+  // 2. Vyplnit a odeslat formulář
   await registration
-    .goto()
-    .then((registration) =>
-      registration.fillRegistrationDetailes(username, password, email)
-    )
+    .fillRegistrationDetailes(username, password, email)
     .then((registration) => registration.submit());
 
-  // Check, ze regostrace je uspesna vcetne zpravy
-  await expect(page.locator(".success-message")).toContainText(
-    "Registrace úspěšná"
-  );
-
-  // Definovani promenych pro API
+  // Ziskani tokenu pres API
   const apiContext = await request.newContext();
-  const userApi = new UserApi(apiContext);
+  const userApi = new ApiHelper(apiContext);
   const accessToken = await userApi.getAccessToken(username, password);
 
-  /// Vytvarime ucet pres API
+  // Vytvoreni uctu
   await test.step("Vytvorit ucet pres API", async () => {
     const createAccountResponse = await userApi.createAccount(
       accessToken,
@@ -43,47 +40,35 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
     expect(createAccountResponse.status()).toBe(201);
   });
 
-  // Login pres FE
+  // Login pres frontend
   await test.step("Login na FE", async () => {
     const login = new LoginPage(page);
-    await login.login(username, password);
-
-    // Overujeme, ze jsme na dashboardu
-    await expect(page.locator("text=Detaily Profilu")).toBeVisible();
+    const dashboard = await login.login(username, password);
+    await dashboard.expectOnDashboard();
   });
 
-  // Vyplnujeme profil
+  // Vyplnit profil a overit vyplneni
   await test.step("Vyplnit uzivateli profil", async () => {
     const dashboard = new DashboardPage(page);
     await dashboard.openEditForm();
     await dashboard.waitForProfileFormReady();
     await dashboard.fillProfile(username, surname, email, phone, age);
-
-    // Overujeme, ze profil je vyplnen uspesne pokud je videt zprava
-    await dashboard.expectSuccessMessage();
-    await expect(page.locator(".update-message")).toHaveText(
-      "Profile updated successfully!"
-    );
-    // Overujeme, ze data jsou vyplnena spravne
-    await dashboard.expectProfileField("username", username);
-    await dashboard.expectProfileField("surname", surname);
-    await dashboard.expectProfileField("email", email);
-    await dashboard.expectProfileField("phone", phone);
-    await dashboard.expectProfileField("age", age);
+    await dashboard.expectUsername(username);
+    await dashboard.expectSurname(surname);
+    await dashboard.expectEmail(email);
+    await dashboard.expectPhone(phone);
+    await dashboard.expectAge(age);
   });
 
-  // Overujeme,ze ucet se zalozil a zustatek
-  await test.step("Validujeme exidstenci uctu", async () => {
-    await expect(
-      page.locator("//td[@data-testid='account-number']")
-    ).toBeVisible();
-    await expect(
-      page.locator("//td[@data-testid='account-balance']")
-    ).toHaveText("10000.00 Kč");
+  // Ověření účtu
+  await test.step("Validujeme existenci uctu", async () => {
+    const dashboard = new DashboardPage(page);
+    await dashboard.expectAccountCreated("10000.00 Kč");
   });
 
   // Logout
   await test.step("Logout", async () => {
-    await page.locator('//button[@class="logout-link"]').click();
+    const dashboard = new DashboardPage(page);
+    await dashboard.logout();
   });
 });

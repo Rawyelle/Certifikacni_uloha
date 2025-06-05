@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse, expect } from "@playwright/test";
 
-export class UserApi {
+export class ApiHelper {
   private readonly request: APIRequestContext;
   private readonly apiUrl =
     "https://tegb-backend-877a0b063d29.herokuapp.com/tegb";

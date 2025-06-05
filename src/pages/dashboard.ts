@@ -4,13 +4,23 @@ export class DashboardPage {
   private readonly page: Page;
   private readonly url =
     "https://tegb-frontend-88542200c6db.herokuapp.com/dashboard";
-  readonly editButton: Locator;
+
   private readonly usernameInput: Locator;
   private readonly surnameInput: Locator;
   private readonly emailInput: Locator;
   private readonly phoneInput: Locator;
   private readonly ageInput: Locator;
+
+  readonly username: Locator;
+  readonly surname: Locator;
+  readonly email: Locator;
+  readonly phomeNumber: Locator;
+  readonly age: Locator;
+
+  readonly editButton: Locator;
   readonly saveButton: Locator;
+  readonly addAccountButton: Locator;
+
   private readonly successMessage: Locator;
   readonly logoImage: Locator;
   readonly navHome: Locator;
@@ -18,15 +28,9 @@ export class DashboardPage {
   readonly navTrx: Locator;
   readonly navSupport: Locator;
   readonly profileDetailes: Locator;
-  readonly username: Locator;
-  readonly surname: Locator;
-  readonly email: Locator;
-  readonly phomeNumber: Locator;
-  readonly age: Locator;
   readonly accoumtsTitle: Locator;
   readonly balanceTitle: Locator;
   readonly accountTypeTitle: Locator;
-  readonly addAccountButton: Locator;
   readonly dashboardFooter: Locator;
   readonly dashBoardTitle: Locator;
   readonly accountNumberTitle: Locator;
@@ -50,6 +54,12 @@ export class DashboardPage {
     );
     this.successMessage = page.locator("//div[@class='update-message']");
 
+    this.username = page.locator("//div[@data-testid='name']");
+    this.surname = page.locator("//div[@data-testid='surname']");
+    this.email = page.locator("//div[@data-testid='email']");
+    this.phomeNumber = page.locator("//div[@data-testid='phone']");
+    this.age = page.locator("//div[@data-testid='age']");
+
     this.logoImage = page.locator("//img[@data-testid='logo-img']");
     this.navHome = page.locator("//nav/ul/li[1]");
     this.navAccounts = page.locator("//nav/ul/li[2]");
@@ -58,11 +68,6 @@ export class DashboardPage {
     this.profileDetailes = page.locator(
       "//h2[@data-testid='profile-details-title']"
     );
-    this.username = page.locator("//div[@data-testid='name']");
-    this.surname = page.locator("//div[@data-testid='surname']");
-    this.email = page.locator("//div[@data-testid='email']");
-    this.phomeNumber = page.locator("//div[@data-testid='phone']");
-    this.age = page.locator("//div[@data-testid='age']");
     this.accoumtsTitle = page.locator("//h2[@data-testid='accounts-title']");
     this.balanceTitle = page.locator(
       "//th[@data-testid='account-balance-heading']"
@@ -88,6 +93,13 @@ export class DashboardPage {
     return this;
   }
 
+  async waitForProfileFormReady(): Promise<this> {
+    await expect(this.saveButton).toBeVisible();
+    await expect(this.usernameInput).toBeVisible();
+    await expect(this.usernameInput).toBeEnabled();
+    return this;
+  }
+
   async fillProfile(
     username: string,
     surname: string,
@@ -100,7 +112,6 @@ export class DashboardPage {
     await this.emailInput.fill(email);
     await this.phoneInput.fill(phone);
     await this.ageInput.fill(age);
-
     await this.saveButton.click();
     return this;
   }
@@ -110,20 +121,47 @@ export class DashboardPage {
     return this;
   }
 
-  async expectProfileField(
-    field: "username" | "surname" | "email" | "phone" | "age",
-    expectedSubstring: string
-  ) {
-    const fieldMap = {
-      username: this.username,
-      surname: this.surname,
-      email: this.email,
-      phone: this.phomeNumber,
-      age: this.age,
-    };
+  // Oddělené ověřovací metody pro jednotlivá pole misto fieldu
+  async expectUsername(expected: string): Promise<this> {
+    await expect(this.username).toContainText(expected);
+    return this;
+  }
 
-    const actualText = await fieldMap[field].textContent();
-    expect(actualText).toContain(expectedSubstring);
+  async expectSurname(expected: string): Promise<this> {
+    await expect(this.surname).toContainText(expected);
+    return this;
+  }
+
+  async expectEmail(expected: string): Promise<this> {
+    await expect(this.email).toContainText(expected);
+    return this;
+  }
+
+  async expectPhone(expected: string): Promise<this> {
+    await expect(this.phomeNumber).toContainText(expected);
+    return this;
+  }
+
+  async expectAge(expected: string): Promise<this> {
+    await expect(this.age).toContainText(expected);
+    return this;
+  }
+
+  async expectOnDashboard(): Promise<this> {
+    await expect(this.profileDetailes).toHaveText("Detaily Profilu");
+    return this;
+  }
+
+  async expectAccountCreated(balance: string): Promise<this> {
+    const accountNumber = this.page.locator(
+      "//td[@data-testid='account-number']"
+    );
+    const accountBalance = this.page.locator(
+      "//td[@data-testid='account-balance']"
+    );
+    await expect(accountNumber).toBeVisible();
+    await expect(accountBalance).toHaveText(balance);
+    return this;
   }
 
   async addAccount(): Promise<this> {
@@ -131,11 +169,7 @@ export class DashboardPage {
     return this;
   }
 
-  async waitForProfileFormReady(): Promise<this> {
-    await expect(this.saveButton).toBeVisible();
-    await expect(this.usernameInput).toBeVisible();
-    await expect(this.usernameInput).toBeEnabled();
-    await this.page.waitForTimeout(2000);
-    return this;
+  async logout(): Promise<void> {
+    await this.page.locator('//button[@class="logout-link"]').click();
   }
 }
