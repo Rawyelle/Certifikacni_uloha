@@ -107,11 +107,31 @@ export class DashboardPage {
     phone: string;
     age: string;
   }) {
-    await this.usernameInput.fill(data.username);
-    await this.surnameInput.fill(data.surname);
-    await this.emailInput.fill(data.email);
-    await this.phoneInput.fill(data.phone);
-    await this.ageInput.fill(data.age);
+    await this.usernameInput.click();
+    await this.usernameInput.press("Control+A");
+    await this.usernameInput.press("Delete");
+    await this.usernameInput.type(data.username, { delay: 50 });
+
+    await this.surnameInput.click();
+    await this.surnameInput.press("Control+A");
+    await this.surnameInput.press("Delete");
+    await this.surnameInput.type(data.surname, { delay: 50 });
+
+    await this.emailInput.click();
+    await this.emailInput.press("Control+A");
+    await this.emailInput.press("Delete");
+    await this.emailInput.type(data.email, { delay: 50 });
+
+    await this.phoneInput.click();
+    await this.phoneInput.press("Control+A");
+    await this.phoneInput.press("Delete");
+    await this.phoneInput.type(data.phone, { delay: 50 });
+
+    await this.ageInput.click();
+    await this.ageInput.press("Control+A");
+    await this.ageInput.press("Delete");
+    await this.ageInput.type(data.age, { delay: 50 });
+
     return this;
   }
 
