@@ -5,7 +5,7 @@ export class DashboardPage {
   private readonly url =
     "https://tegb-frontend-88542200c6db.herokuapp.com/dashboard";
 
-  private readonly usernameInput: Locator;
+  readonly usernameInput: Locator;
   private readonly surnameInput: Locator;
   private readonly emailInput: Locator;
   private readonly phoneInput: Locator;
@@ -100,18 +100,18 @@ export class DashboardPage {
     return this;
   }
 
-  async fillProfile(
-    username: string,
-    surname: string,
-    email: string,
-    phone: string,
-    age: string
-  ): Promise<this> {
-    await this.usernameInput.fill(username);
-    await this.surnameInput.fill(surname);
-    await this.emailInput.fill(email);
-    await this.phoneInput.fill(phone);
-    await this.ageInput.fill(age);
+  async fillProfile(data: {
+    username: string;
+    surname: string;
+    email: string;
+    phone: string;
+    age: string;
+  }) {
+    await this.usernameInput.fill(data.username);
+    await this.surnameInput.fill(data.surname);
+    await this.emailInput.fill(data.email);
+    await this.phoneInput.fill(data.phone);
+    await this.ageInput.fill(data.age);
     return this;
   }
 
