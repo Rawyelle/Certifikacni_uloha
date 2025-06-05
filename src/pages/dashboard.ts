@@ -198,4 +198,27 @@ export class DashboardPage {
     await expect(this.phoneInput).toBeEnabled();
     await expect(this.ageInput).toBeEnabled();
   }
+
+  async expectProfileHidden(): Promise<void> {
+    await expect(this.usernameInput).toBeHidden();
+    await expect(this.surnameInput).toBeHidden();
+    await expect(this.emailInput).toBeHidden();
+    await expect(this.phoneInput).toBeHidden();
+    await expect(this.ageInput).toBeHidden();
+  }
+
+  async expectProfileData(data: {
+    username: string;
+    surname: string;
+    email: string;
+    phone: string;
+    age: string;
+  }): Promise<this> {
+    await this.expectUsername(data.username);
+    await this.expectSurname(data.surname);
+    await this.expectEmail(data.email);
+    await this.expectPhone(data.phone);
+    await this.expectAge(data.age);
+    return this;
+  }
 }

@@ -94,9 +94,7 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
   const age = faker.number.int({ min: 12, max: 99 }).toString();
 
   const loginPage = new LoginPage(page);
-  const registration = await loginPage
-    .open()
-    .then((page) => page.goToRegistration());
+  const registration = await loginPage.open().then((p) => p.goToRegistration());
 
   await registration
     .fillRegistrationDetailes(username, password, email)
@@ -121,37 +119,34 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
 
     await dashboard.openEditForm();
     await dashboard.waitForProfileFormReady();
-
-    // Ждем, что поля ввода активны
     await dashboard.expectProfileFieldsEnabled();
-    // Заполняем форму
-    await dashboard.fillProfile({ username, surname, email, phone, age });
 
-    await dashboard.waitForFormFilled(username, surname, email, phone, age);
+    const profileData = { username, surname, email, phone, age };
+    await dashboard.fillProfile(profileData);
 
-    // Убедимся, что кнопка Save активна
-    await expect(dashboard.saveButton).toBeEnabled();
-
-    // Параллельно ждем успешный PATCH и нажимаем Save
-    const patchResponse = page.waitForResponse(
-      (res) =>
-        res.url().includes("/tegb/profile") &&
-        res.request().method() === "PATCH" &&
-        res.status() === 200
+    // небольшое ожидание перед проверкой, чтобы дать DOM обновиться
+    await page.waitForTimeout(300);
+    await dashboard.waitForFormFilled(
+      profileData.username,
+      profileData.surname,
+      profileData.email,
+      profileData.phone,
+      profileData.age
     );
-    await dashboard.clickSave();
-    await patchResponse;
+
+    await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          response.url().includes("/tegb/profile") &&
+          response.request().method() === "PATCH" &&
+          response.status() === 200
+      ),
+      dashboard.clickSave(),
+    ]);
 
     await dashboard.expectSuccessMessage();
-
-    await expect(dashboard.usernameInput).toBeHidden(); // или другой надёжный способ
-
-    await dashboard.expectUsername(username);
-    await dashboard.expectSurname(surname);
-    await dashboard.expectEmail(email);
-    await dashboard.expectPhone(phone);
-    await dashboard.expectAge(age);
-
+    await dashboard.expectProfileHidden();
+    await dashboard.expectProfileData(profileData);
     await dashboard.expectAccountCreated("10000.00 Kč");
     await dashboard.logout();
   });
