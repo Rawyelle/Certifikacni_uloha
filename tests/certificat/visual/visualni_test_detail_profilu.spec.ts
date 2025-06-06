@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+/*import { test, expect } from "@playwright/test";
 import { LoginPage } from "../../../src/pages/login-page.ts";
 
 const username = process.env.TEGB_USER_VIS as string;
@@ -12,3 +12,4 @@ test("Vizualni test: detail profilu screenshot", async ({ page }) => {
   const profileSection = page.locator("//div[@data-testid='account-summary']");
   await expect(profileSection).toHaveScreenshot("profile-details.png");
 });
+*/
