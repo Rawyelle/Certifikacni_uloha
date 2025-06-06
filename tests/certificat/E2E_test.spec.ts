@@ -94,7 +94,7 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
   page,
 }) => {
   const profileData = {
-    username: faker.internet.userName(),
+    username: faker.internet.username(),
     password: faker.internet.password(),
     email: faker.internet.email(),
     surname: faker.person.lastName(),
