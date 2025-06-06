@@ -41,15 +41,15 @@ test.describe("Dashboard atomicke testy", () => {
     await expect.soft(dashboard.navSupport).toHaveText("Podpora");
 
     //datail profilu
-    await expect.soft(dashboard.profileDetailes).toHaveText("Detaily Profilu");
+    await expect.soft(dashboard.profileDetails).toHaveText("Detaily Profilu");
     await expect.soft(dashboard.username).toContainText("Jméno:");
     await expect.soft(dashboard.surname).toContainText("Příjmení:");
     await expect.soft(dashboard.email).toContainText("Email:");
-    await expect.soft(dashboard.phomeNumber).toContainText("Telefon:");
+    await expect.soft(dashboard.phoneNumber).toContainText("Telefon:");
     await expect.soft(dashboard.age).toContainText("Věk:");
 
     //info o uctech
-    await expect.soft(dashboard.accoumtsTitle).toHaveText("Účty");
+    await expect.soft(dashboard.accountsTitle).toHaveText("Účty");
     await expect.soft(dashboard.balanceTitle).toHaveText("Zůstatek");
     await expect.soft(dashboard.accountTypeTitle).toHaveText("Typ účtu");
     await expect.soft(dashboard.accountNumberTitle).toHaveText("Číslo účtu");

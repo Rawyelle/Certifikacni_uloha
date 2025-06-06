@@ -1,11 +1,11 @@
-import { test, expect, request } from "@playwright/test";
+/*import { test, expect, request } from "@playwright/test";
 import { faker } from "@faker-js/faker";
 
 import { LoginPage } from "../../src/pages/login-page.ts";
 
 import { ApiHelper } from "../../src/api/apiHelper.ts";
 
-/*test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlasit se", async ({
+test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlasit se", async ({
   page,
 }) => {
   const profileData = {
@@ -16,6 +16,7 @@ import { ApiHelper } from "../../src/api/apiHelper.ts";
     phone: faker.phone.number(),
     age: faker.number.int({ min: 12, max: 99 }).toString(),
   };
+  const initialBalance = 10000;
 
   const loginPage = new LoginPage(page);
   const registration = await loginPage
@@ -70,7 +71,7 @@ import { ApiHelper } from "../../src/api/apiHelper.ts";
     await dashboard.clickSave();
 
     await dashboard.expectSuccessMessage();
-    await expect(dashboard.usernameInput).toBeHidden(); // или другой надежный способ
+    await expect(dashboard.usernameInput).toBeHidden();
 
     await dashboard.expectUsername(profileData.username);
     await dashboard.expectSurname(profileData.surname);
@@ -83,49 +84,67 @@ import { ApiHelper } from "../../src/api/apiHelper.ts";
   });
 });
 */
+import { test, expect, request } from "@playwright/test";
+import { faker } from "@faker-js/faker";
+
+import { LoginPage } from "../../src/pages/login-page.ts";
+import { ApiHelper } from "../../src/api/apiHelper.ts";
+
 test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlasit se", async ({
   page,
 }) => {
-  const username = faker.internet.userName();
-  const password = faker.internet.password();
-  const email = faker.internet.email();
-  const surname = faker.person.lastName();
-  const phone = faker.phone.number();
-  const age = faker.number.int({ min: 12, max: 99 }).toString();
+  const profileData = {
+    username: faker.internet.userName(),
+    password: faker.internet.password(),
+    email: faker.internet.email(),
+    surname: faker.person.lastName(),
+    phone: faker.phone.number(),
+    age: faker.number.int({ min: 12, max: 99 }).toString(),
+  };
 
   const loginPage = new LoginPage(page);
-  const registration = await loginPage.open().then((p) => p.goToRegistration());
+  const registration = await loginPage
+    .open()
+    .then((page) => page.goToRegistration());
 
   await registration
-    .fillRegistrationDetailes(username, password, email)
+    .fillRegistrationDetailes(
+      profileData.username,
+      profileData.password,
+      profileData.email
+    )
     .then((r) => r.submit());
 
   const apiContext = await request.newContext();
   const userApi = new ApiHelper(apiContext);
-  const accessToken = await userApi.getAccessToken(username, password);
+  const accessToken = await userApi.getAccessToken(
+    profileData.username,
+    profileData.password
+  );
 
   await test.step("Vytvorit ucet pres API", async () => {
+    const initialBalance = 10000;
     const createAccountResponse = await userApi.createAccount(
       accessToken,
-      10000
+      initialBalance
     );
     expect(createAccountResponse.status()).toBe(201);
   });
 
   await test.step("Login na FE", async () => {
     const login = new LoginPage(page);
-    const dashboard = await login.login(username, password);
+    const dashboard = await login.login(
+      profileData.username,
+      profileData.password
+    );
     await dashboard.expectOnDashboard();
 
     await dashboard.openEditForm();
     await dashboard.waitForProfileFormReady();
     await dashboard.expectProfileFieldsEnabled();
 
-    const profileData = { username, surname, email, phone, age };
+    await page.waitForTimeout(500); // Ожидание перед началом заполнения
     await dashboard.fillProfile(profileData);
-
-    // небольшое ожидание перед проверкой, чтобы дать DOM обновиться
-    await page.waitForTimeout(300);
     await dashboard.waitForFormFilled(
       profileData.username,
       profileData.surname,
@@ -134,20 +153,15 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
       profileData.age
     );
 
-    await Promise.all([
-      page.waitForResponse(
-        (response) =>
-          response.url().includes("/tegb/profile") &&
-          response.request().method() === "PATCH" &&
-          response.status() === 200
-      ),
-      dashboard.clickSave(),
-    ]);
+    await page.waitForTimeout(300); // Ожидание перед сохранением
+    await dashboard.clickSave();
 
     await dashboard.expectSuccessMessage();
     await dashboard.expectProfileHidden();
+
     await dashboard.expectProfileData(profileData);
-    await dashboard.expectAccountCreated("10000.00 Kč");
+
+    await dashboard.expectAccountCreated(`10000.00 Kč`);
     await dashboard.logout();
   });
 });

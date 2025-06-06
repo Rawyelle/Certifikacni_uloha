@@ -5,30 +5,34 @@ export class DashboardPage {
   private readonly url =
     "https://tegb-frontend-88542200c6db.herokuapp.com/dashboard";
 
+  // Inputs
   readonly usernameInput: Locator;
   private readonly surnameInput: Locator;
   private readonly emailInput: Locator;
   private readonly phoneInput: Locator;
   private readonly ageInput: Locator;
 
+  // Profile outputs
   readonly username: Locator;
   readonly surname: Locator;
   readonly email: Locator;
-  readonly phomeNumber: Locator;
+  readonly phoneNumber: Locator;
   readonly age: Locator;
 
+  // Buttons
   readonly editButton: Locator;
   readonly saveButton: Locator;
   readonly addAccountButton: Locator;
 
+  // UI Elements
   private readonly successMessage: Locator;
   readonly logoImage: Locator;
   readonly navHome: Locator;
   readonly navAccounts: Locator;
   readonly navTrx: Locator;
   readonly navSupport: Locator;
-  readonly profileDetailes: Locator;
-  readonly accoumtsTitle: Locator;
+  readonly profileDetails: Locator;
+  readonly accountsTitle: Locator;
   readonly balanceTitle: Locator;
   readonly accountTypeTitle: Locator;
   readonly dashboardFooter: Locator;
@@ -37,9 +41,17 @@ export class DashboardPage {
 
   constructor(page: Page) {
     this.page = page;
+
+    // Buttons
     this.editButton = page.locator(
       "//button[@data-testid='toggle-edit-profile-button']"
     );
+    this.saveButton = page.locator(
+      "//button[@data-testid='save-changes-button']"
+    );
+    this.addAccountButton = page.locator("//button[@class='account-action']");
+
+    // Inputs
     this.usernameInput = page.locator(
       "//input[@data-testid='chage-name-input']"
     );
@@ -49,35 +61,37 @@ export class DashboardPage {
     this.emailInput = page.locator("//input[@data-testid='chage-email-input']");
     this.phoneInput = page.locator("//input[@data-testid='chage-phone-input']");
     this.ageInput = page.locator("//input[@data-testid='chage-age-input']");
-    this.saveButton = page.locator(
-      "//button[@data-testid='save-changes-button']"
-    );
-    this.successMessage = page.locator("//div[@class='update-message']");
 
+    // Outputs
     this.username = page.locator("//div[@data-testid='name']");
     this.surname = page.locator("//div[@data-testid='surname']");
     this.email = page.locator("//div[@data-testid='email']");
-    this.phomeNumber = page.locator("//div[@data-testid='phone']");
+    this.phoneNumber = page.locator("//div[@data-testid='phone']");
     this.age = page.locator("//div[@data-testid='age']");
 
+    // Misc
+    this.successMessage = page.locator("//div[@class='update-message']");
     this.logoImage = page.locator("//img[@data-testid='logo-img']");
+    this.dashboardFooter = page.locator("//footer[@class='dashboard-footer']");
+    this.dashBoardTitle = page.locator("//span[@class='app-title']");
+
+    // Navigation
     this.navHome = page.locator("//nav/ul/li[1]");
     this.navAccounts = page.locator("//nav/ul/li[2]");
     this.navTrx = page.locator("//nav/ul/li[3]");
     this.navSupport = page.locator("//nav/ul/li[4]");
-    this.profileDetailes = page.locator(
+
+    // Section Titles
+    this.profileDetails = page.locator(
       "//h2[@data-testid='profile-details-title']"
     );
-    this.accoumtsTitle = page.locator("//h2[@data-testid='accounts-title']");
+    this.accountsTitle = page.locator("//h2[@data-testid='accounts-title']");
     this.balanceTitle = page.locator(
       "//th[@data-testid='account-balance-heading']"
     );
     this.accountTypeTitle = page.locator(
       "//th[@data-testid='account-type-heading']"
     );
-    this.addAccountButton = page.locator("//button[@class='account-action']");
-    this.dashboardFooter = page.locator("//footer[@class='dashboard-footer']");
-    this.dashBoardTitle = page.locator("//span[@class='app-title']");
     this.accountNumberTitle = page.locator(
       "//th[@data-testid='account-number-heading']"
     );
@@ -106,33 +120,20 @@ export class DashboardPage {
     email: string;
     phone: string;
     age: string;
-  }) {
-    await this.usernameInput.click();
-    await this.usernameInput.press("Control+A");
-    await this.usernameInput.press("Delete");
-    await this.usernameInput.type(data.username, { delay: 50 });
-
-    await this.surnameInput.click();
-    await this.surnameInput.press("Control+A");
-    await this.surnameInput.press("Delete");
-    await this.surnameInput.type(data.surname, { delay: 50 });
-
-    await this.emailInput.click();
-    await this.emailInput.press("Control+A");
-    await this.emailInput.press("Delete");
-    await this.emailInput.type(data.email, { delay: 50 });
-
-    await this.phoneInput.click();
-    await this.phoneInput.press("Control+A");
-    await this.phoneInput.press("Delete");
-    await this.phoneInput.type(data.phone, { delay: 50 });
-
-    await this.ageInput.click();
-    await this.ageInput.press("Control+A");
-    await this.ageInput.press("Delete");
-    await this.ageInput.type(data.age, { delay: 50 });
-
+  }): Promise<this> {
+    await this.typeInField(this.usernameInput, data.username);
+    await this.typeInField(this.surnameInput, data.surname);
+    await this.typeInField(this.emailInput, data.email);
+    await this.typeInField(this.phoneInput, data.phone);
+    await this.typeInField(this.ageInput, data.age);
     return this;
+  }
+
+  private async typeInField(field: Locator, value: string): Promise<void> {
+    await field.click();
+    await field.press("Control+A");
+    await field.press("Delete");
+    await field.type(value, { delay: 50 });
   }
 
   async expectSuccessMessage(): Promise<this> {
@@ -140,7 +141,6 @@ export class DashboardPage {
     return this;
   }
 
-  // Oddělené ověřovací metody pro jednotlivá pole misto fieldu
   async expectUsername(expected: string): Promise<this> {
     await expect(this.username).toContainText(expected);
     return this;
@@ -157,7 +157,7 @@ export class DashboardPage {
   }
 
   async expectPhone(expected: string): Promise<this> {
-    await expect(this.phomeNumber).toContainText(expected);
+    await expect(this.phoneNumber).toContainText(expected);
     return this;
   }
 
@@ -167,7 +167,7 @@ export class DashboardPage {
   }
 
   async expectOnDashboard(): Promise<this> {
-    await expect(this.profileDetailes).toHaveText("Detaily Profilu");
+    await expect(this.profileDetails).toHaveText("Detaily Profilu");
     return this;
   }
 
@@ -211,7 +211,8 @@ export class DashboardPage {
     await this.saveButton.click();
     return this;
   }
-  async expectProfileFieldsEnabled() {
+
+  async expectProfileFieldsEnabled(): Promise<void> {
     await expect(this.usernameInput).toBeEnabled();
     await expect(this.surnameInput).toBeEnabled();
     await expect(this.emailInput).toBeEnabled();
