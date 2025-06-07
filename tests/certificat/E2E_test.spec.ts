@@ -27,7 +27,7 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
       profileData.password,
       profileData.email
     )
-    .then((r) => r.submit());
+    .then((registration) => registration.submit());
 
   const apiContext = await request.newContext();
   const userApi = new ApiHelper(apiContext);
@@ -65,7 +65,7 @@ test("E2E test: registrace, login FE, vytvorit ucet API, vyplnit profil a odhlas
       profileData.email,
       profileData.phone,
       profileData.age
-    );*/
+    );/*/
 
     await page.waitForTimeout(300); // taky pro jistotu nechám, pojovala jsem s tím padáním přilíš dlouho
     await dashboard.clickSave();
