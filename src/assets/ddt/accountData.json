@@ -1,0 +1,7 @@
+[
+  { "amount": "0 Kč" },
+  { "amount": "200 000,52 Kč" },
+  { "amount": "-12 345.00 Kč" },
+  { "amount": "-196 000 921 Kč", "disabled": true },
+  { "amount": "298 000 123 Kč", "disabled": true }
+]
